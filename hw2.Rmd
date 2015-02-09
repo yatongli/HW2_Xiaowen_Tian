@@ -1,0 +1,22 @@
+---
+title: "hw2"
+output: html_document
+---
+
+Find all HCV gene expression data using the Illumina platform submitted by an investigator at Yale. 
+```{r}
+library(GEOmetadb)
+geo_con <- dbConnect(SQLite(),'GEOmetadb.sqlite')
+description<-dbGetQuery(geo_con, "SELECT gse.title, gse.gse, gpl.gpl, gpl.manufacturer, gpl.description FROM (gse JOIN gse_gpl ON gse.gse=gse_gpl.gse) j JOIN gpl ON j.gpl=gpl.gpl WHERE gse.Title LIKE '%HCV%' AND gse.contact LIKE '%Yale%' AND gpl.manufacturer LIKE '%Illumina%';")
+description
+
+```
+
+Reproduce using data.table
+```{r}
+library(data.table)
+((data.table(dbGetQuery(geo_con, "SELECT * FROM gpl"),key='gpl')[jointable])[i.title %like% 'HCV' & i.contact %like% 'Yale' & manufacturer %like% 'Illumina'])[,list(i.title,gse,gpl,manufacturer,description)]
+                                                 
+```
+
+
