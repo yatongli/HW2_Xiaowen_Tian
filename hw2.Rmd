@@ -4,6 +4,23 @@ output: html_document
 ---
 
 Find all HCV gene expression data using the Illumina platform submitted by an investigator at Yale. 
+Since HCD stands for hepatitis C virus, we could also include this name while searching for the title.
+
+```{r}
+res <- dbGetQuery(geo_con, "SELECT 
+            gse.title, 
+            gse.gse, 
+            gpl.gpl, 
+            gpl.manufacturer, 
+            gpl.title 
+        FROM (gse JOIN gse_gpl ON gse.gse=gse_gpl.gse) j 
+        JOIN gpl ON j.gpl=gpl.gpl 
+        WHERE gse.title like '%HCV%' OR gse.title like '%epatit%'
+            AND gpl.manufacturer like '%Illumina%' 
+            AND gse.contact like '%Yale%';")
+res
+```
+
 ```{r}
 library(GEOmetadb)
 geo_con <- dbConnect(SQLite(),'GEOmetadb.sqlite')
